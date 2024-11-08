@@ -22,15 +22,15 @@ class LibraryDetailView(DetailView):
 
 
 # User Login View (built-in)
-class UserLoginView(LoginView):
+class LoginView(LoginView):
     template_name = 'relationship_app/login.html'
 
 # User logout View (built-in)
-class UserLogoutView(LogoutView):
+class LogoutView(LogoutView):
     template_name = 'relationship_app/login.html'
 
-
-class UserRegisterView(CreateView):
+#User Register View
+class RegisterView(CreateView):
     form_class = UserCreationForm
     template_name = 'relationship_app/register.html'
     success_url = reverse_lazy('login')
