@@ -1,39 +1,60 @@
-import django
-import os
+python ../manage.py shell
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_models.settings')
-django.setup()
+from .models import Author, Book, Library, Librarian
 
-from relationship_app.models import Author, Book, Library, Librarian
+# Query all books by a specific author
+# Retrieve the author by name
+author = Author.objects.get(name="author_name")
+author_name = Author.objects.get(name="author_name")
+Author.objects.get(name=author_name)
+# Get all books by the author
+Book.objects.filter(author=author)
 
-# 1. Query all books by a specific author using `filter()`
-def get_books_by_author(author_name):
-    try:
-        author = Author.objects.get(name=author_name)
-        books = Book.objects.filter(author=author)  # Using filter() here
-        return [book.title for book in books]
-    except Author.DoesNotExist:
-        return f"Author '{author_name}' not found."
 
-# 2. List all books in a library using `filter()`
-def get_books_in_library(library_name):
-    try:
-        library = Library.objects.get(name=library_name)
-        books = Book.objects.filter(libraries=library)  # Using filter() here with ManyToManyField
-        return [book.title for book in books]
-    except Library.DoesNotExist:
-        return f"Library '{library_name}' not found."
 
-# 3. Retrieve the librarian for a library using `filter()`
-def get_librarian_for_library(library_name):
-    try:
-        librarian = Librarian.objects.filter(library__name=library_name).first()  # Using filter() here with OneToOneField
-        return librarian.name if librarian else "No librarian found for this library."
-    except Librarian.DoesNotExist:
-        return f"No librarian found for the library '{library_name}'."
+# List all books in a library.
+# Retrieve the library by name
+library_name = Library.objects.get(name="library_name")
+Library.objects.get(name=library_name)
+# Get all books in the library
+Book.objects.filter(library=library_name)
+# Or
+library_name.books.all()
 
-# Testing the queries
-if __name__ == "__main__":
-    print("Books by Author 'J.K. Rowling':", get_books_by_author("J.K. Rowling"))
-    print("Books in Library 'City Library':", get_books_in_library("City Library"))
-    print("Librarian for 'City Library':", get_librarian_for_library("City Library"))
+
+# Retrieve the librarian for a library.
+# Retrieve the library by name
+library_name = Library.objects.get(name="library_name")
+# Get the librarian associated with the library
+librarian = Librarian.objects.get(library=library_name)
+print(library_name)
+
+
+# Add book to a library
+# Retrieve the library and book
+library = Library.objects.get(name="library_name")
+Book.objects.get(title="book_title")
+book = Book.objects.get(title="book_title")
+# Add the book to the library
+library.books.add(book)
+library.save()
+
+
+# Add a list of books to the library
+# Retrieve the author and library by names
+author = Book.objects.get(name="author_name")
+library = Library.objects.get(name="library_name")
+# Retrieve the books you want to add
+book1 = Book(title="Macbeth", author=author)
+book2 = Book(title="Brutus", author=author)
+book3 = Book(title="Twilight", author=author)
+# Add the list of books
+library.objects.add(book1, book2, book3)
+# This does not require save() because it activates the many-to-many relationship and creates the record.
+
+
+# Create a book
+# Retrieve the author by name
+author = Author.objects.get(name="author_name")
+# create the new book
+Book.objects.create(title="book_title", author=author)
