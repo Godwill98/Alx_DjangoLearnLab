@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from .views import list_books, LibraryDetailView 
-from django.contrib.auth.views import UserLoginView, UserLogoutView
+from django.contrib.auth.views import UserLoginView,LogoutView
 
 
 urlpatterns = [
@@ -10,7 +10,8 @@ urlpatterns = [
 
     #Authentication views
     path('login/', UserLoginView.as_view, template_name='login'),
-    path('logout/', LogoutView.as_view, template_name='logout'),
+    path('logout/', LogoutView.as_view(template_name='relationship_app/logout.html'), name='logout'),
+]
     path('register/', views.register, name='register'),  # Add URL for user registration.
 ]
 
