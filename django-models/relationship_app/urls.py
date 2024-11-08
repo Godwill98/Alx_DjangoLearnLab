@@ -10,7 +10,7 @@ urlpatterns = [
 
     #Authentication views
     path('login/', UserLoginView.as_view, template_name='login'),
-    path('logout/', UserLogoutView.as_view, template_name='logout'),
+    path('logout/', LogoutView.as_view, template_name='logout'),
     path('register/', views.register, name='register'),  # Add URL for user registration.
 ]
 
