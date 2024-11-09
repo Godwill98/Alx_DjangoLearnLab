@@ -37,23 +37,35 @@ class RegisterView(CreateView):
     success_url = reverse_lazy('login')
 
 
-# --- Role-Based Views ---
+# Helper functions for role checks
+def is_admin(user):
+    return user.userprofile.role == 'Admin'
 
+def is_librarian(user):
+    return user.userprofile.role == 'Librarian'
+
+def is_member(user):
+    return user.userprofile.role == 'Member'
+
+# Admin View
 @user_passes_test(is_admin)
 def admin_view(request):
     return render(request, 'relationship_app/admin_view.html')
 
+
+# Librarian View
 @user_passes_test(is_librarian)
 def librarian_view(request):
     return render(request, 'relationship_app/librarian_view.html')
 
+
+# Member View
 @user_passes_test(is_member)
 def member_view(request):
-    return render(request, 'relationship_app/member_view.html')
+    return render(request,'relationship_app/member_view.html')
 
 
-# --- CRUD Views for Book Management ---
-
+# Add Book View
 @permission_required('relationship_app.can_add_book', raise_exception=True)
 def add_book(request):
     if request.method == 'POST':
@@ -65,6 +77,8 @@ def add_book(request):
         form = BookForm()
     return render(request, 'relationship_app/add_book.html', {'form': form})
 
+
+# Edit Book View
 @permission_required('relationship_app.can_change_book', raise_exception=True)
 def edit_book(request, pk):
     book = get_object_or_404(Book, pk=pk)
@@ -72,11 +86,13 @@ def edit_book(request, pk):
         form = BookForm(request.POST, instance=book)
         if form.is_valid():
             form.save()
-            return redirect('relationship_app/library_detail', pk=book.id)
+            return redirect('relationshhip_app/book_detail', pk=book.id)
     else:
         form = BookForm(instance=book)
     return render(request, 'relationship_app/edit_book.html', {'form': form, 'book': book})
 
+
+# Delete Book View
 @permission_required('relationship_app.can_delete_book', raise_exception=True)
 def delete_book(request, pk):
     book = get_object_or_404(Book, pk=pk)
@@ -84,4 +100,3 @@ def delete_book(request, pk):
         book.delete()
         return redirect('list_books')
     return render(request, 'relationship_app/delete_book.html', {'book': book})
-
