@@ -5,35 +5,30 @@ from .models import Author, Book, Library, Librarian
 # Query all books by a specific author
 # Retrieve the author by name
 author = Author.objects.get(name="author_name")
-author_name = Author.objects.get(name="author_name")
-Author.objects.get(name=author_name)
 # Get all books by the author
 Book.objects.filter(author=author)
 
 
-
 # List all books in a library.
 # Retrieve the library by name
-library_name = Library.objects.get(name="library_name")
-Library.objects.get(name=library_name)
+library = Library.objects.get(name="library_name")
 # Get all books in the library
-Book.objects.filter(library=library_name)
+Book.objects.filter(library=library)
 # Or
-library_name.books.all()
+library.books.all()
 
 
 # Retrieve the librarian for a library.
 # Retrieve the library by name
-library_name = Library.objects.get(name="library_name")
+library = Library.objects.get(name="library_name")
 # Get the librarian associated with the library
-librarian = Librarian.objects.get(library=library_name)
-print(library_name)
+librarian = Librarian.objects.get(library="library")
+print(library)
 
 
 # Add book to a library
 # Retrieve the library and book
 library = Library.objects.get(name="library_name")
-Book.objects.get(title="book_title")
 book = Book.objects.get(title="book_title")
 # Add the book to the library
 library.books.add(book)

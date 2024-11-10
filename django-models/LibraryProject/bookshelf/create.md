@@ -1,5 +1,10 @@
-# create.md
-```python
+# Create Book
+### Create a Book instance with the title “1984”, author “George Orwell”, and publication year 1949.
+
+python manage.py shell
+
 from bookshelf.models import Book
-book = Book.objects.create(title="1984", author="George Orwell", publication_year=1949)
-book
+
+Book.objects.create(title="1984", author="George Orwell", publication_year=1949)
+
+""" <Book:  Title: 1984, Author: George Orwell, Publication Date: 1949> """
