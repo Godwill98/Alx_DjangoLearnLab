@@ -1,41 +1,40 @@
-from django.shortcuts import render
-from django.contrib.auth import login
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.contrib.auth.decorators import user_passes_test
+from django.views.generic.detail import DetailView
+# from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
-from django.views.generic.detail import DetailView
-from .models import Library, Book
-from django.views.generic.detail import DetailView
-from django.contrib.auth.views import LoginView, LogoutView
+from django.views.generic.edit import CreateView
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth import login
+from django.http import HttpResponseForbidden
+from .forms import BookForm
+
+from .models import Book
+from .models import Library
 
 # Create your views here.
-
-# Function-based view to list all books
 def list_books(request):
-    books = Book.objects.all()  # Fetch all book records
+    books = Book.objects.all()
     return render(request, 'relationship_app/list_books.html', {'books': books})
 
 
-# Class-based view to display library details
 class LibraryDetailView(DetailView):
     model = Library
     template_name = 'relationship_app/library_detail.html'
     context_object_name = 'library'
 
-
-# User Login View (built-in)
-class LoginView(LoginView):
-    template_name = 'relationship_app/login.html'
-
-# User logout View (built-in)
-class LogoutView(LogoutView):
-    template_name = 'relationship_app/login.html'
-
-#User Register View
-class RegisterView(CreateView):
-    form_class = UserCreationForm()
-    template_name = 'relationship_app/register.html'
-    success_url = reverse_lazy('login')
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # Automatically log in the user after registration
+            return redirect(reverse_lazy('login'))  # Redirect to the login page
+    else:
+        form = UserCreationForm()
+    
+    return render(request, 'relationship_app/register.html', {'form': form})
 
 
 # Helper functions for role checks
