@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import Book
+from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser
+from .models import CustomUser,Book
 
 
 # Register your models here.
@@ -9,6 +9,15 @@ class BookAdmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'publication_year')
     search_fields = ('title', 'author')
     list_filter = ('author', 'publication_year')
+
+    class Meta:
+        permissions = [
+            ("can_view", "Can view book details"),
+            ("can_create", "Can create book"),
+            ("can_edit", "Can edit book"),
+            ("can_delete", "Can delete book"),
+        ]
+
 
 
 admin.site.register(Book, BookAdmin)
