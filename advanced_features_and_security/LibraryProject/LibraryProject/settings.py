@@ -141,10 +141,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SECURE_BROWSER_XSS_FILTER = True
 X_FRAME_OPTIONS = 'DENY'
 SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = True  # Redirect all non-HTTPS requests to HTTPS
 
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True # Include subdomains in HSTS policy
+SECURE_HSTS_PRELOAD = True  # Enable HSTS preload list
+SECURE_REF
+
+CSRF_COOKIE_SECURE = True  # CSRF cookie is only sent over HTTPS
+SESSION_COOKIE_SECURE = True # Session cookie is only sent over HTTPS
 CSRF_COOKIE_HTTPONLY = True
 
 CSP_DEFAULT_SRC = ("'self'",)
@@ -152,3 +157,12 @@ CSP_SCRIPT_SRC = ("'self'",)
 CSP_STYLE_SRC = ("'self'", 'https:')
 CSP_IMG_SRC = ("'self'", 'data:')
 CSP_FONT_SRC = ("'self'", 'https:')
+
+# prevent clickjacking by disallowing the site to be rendered in an iframe
+X_FRAME_OPTIONS = 'DENY'
+
+#Prevent MIME type sniffing
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Enable the browser's XSS filter
+SECURE_BROWSER_XSS_FILTER = True
