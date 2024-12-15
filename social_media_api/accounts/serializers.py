@@ -7,7 +7,7 @@ from .models import CustomUser, Profile
 class CustomUserSerializer(serializers.ModelSerializer):
     """Custom User Serializer"""
 
-    password = serializers.CharField(write_only=True, required=True)
+    password = serializers.CharField()
     token = serializers.SerializerMethodField()
 
     class Meta:
