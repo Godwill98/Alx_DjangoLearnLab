@@ -1,48 +1,73 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import AbstractUser, PermissionsMixin
+from django.contrib.auth.models import Group, Permission
+from rest_framework import serializers
+from django.contrib.auth.models import User
+from django.conf import settings
 
 
-class CustomUserManager(BaseUserManager):
-    """Custom User Manager"""
-    def create_user(self, email, password):
-        """Create and save a User with the given email and password."""
-        if not email:
-            raise ValueError('Users must have an email address')
-
-        user = self.model(email=self.normalize_email(email))
-        user.set_password(password)
-        user.save(using=self._db)
-        
-        return user
-
-    def create_superuser(self, email, password):
-        """Create a superuser with given email and password"""
-        user = self.create_user(email, password)
-        user.is_staff = True
-        user.is_superuser = True
-        user.save(using=self._db)
-
-        return user
 
 
-class CustomUser(AbstractUser):
-    """Custom user"""
-    email = models.EmailField(unique=True, max_length=255)
-    username = models.CharField(unique=False, max_length=20)
 
-    objects = CustomUserManager()
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
-
-
-class Profile(models.Model):
-    """User profile that ties to User"""
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    bio = models.TextField(blank=True, null=True)
-    phone = models.CharField(max_length=20, blank=True, null=True)
-    picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
-    followers = models.ManyToManyField(CustomUser, related_name='following', blank=True)
+class Follow(models.Model):
+    follower = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='following_accounts', on_delete=models.CASCADE)
+    followed = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='followers_accounts', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.user.username
+        return f"{self.follower} follows {self.followed}"
+
+class CustomUser(AbstractUser, PermissionsMixin):
+    bio = models.TextField(max_length=500, blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_images', blank=True, null=True)
+    followers = models.ManyToManyField('self', blank=True)      
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='customer_set',
+        blank=True,
+    )  
+
+    following = models.ManyToManyField('self', symmetrical=True, blank=True)
+
+    def __str__(self):
+        return self.username  
+
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='custom_user_set',  # Change this to something unique
+        blank=True,
+    )    
+    
+
+  
+    def __str__(self):
+        return self.username
+    
+    
+    
+    
+    @property
+    def is_staff_or_superuser(self):
+        return self.is_staff or self.is_superuser
+    
+class User(AbstractUser):
+    following = models.ManyToManyField('self', symmetrical=False, blank=True)
+
+    def __str__(self):
+        return self.username    
+class UserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'bio', 'profile_picture')
+
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User  # Ensure this is the correct model
+        fields = ('username', 'password', 'email')  # Include necessary fields
+
+    def create(self, validated_data):
+        user = User(**validated_data)
+        user.set_password(validated_data['password'])  # Hash the password
+        
+        user.save()
+        return user    

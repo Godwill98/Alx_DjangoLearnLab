@@ -1,16 +1,22 @@
-from rest_framework.routers import DefaultRouter
-from rest_framework.authtoken.views import obtain_auth_token
 from django.urls import path, include
-
-from .views import CustomUserViewSet, ProfileViewSet, RegisterView, LoginView
+from .views import RegisterView, LoginView
+from .views import UserFollowViewSet
+from rest_framework.routers import DefaultRouter
+from . import views
+from .views import RegisterView
+from .views import LoginView
+from .views import RegistrationView
 
 router = DefaultRouter()
-router.register(r'users', CustomUserViewSet, basename='user')
-router.register(r'profiles', ProfileViewSet, basename='profile')
+router.register(r'follow', UserFollowViewSet, basename='follow')
 
 urlpatterns = [
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', LoginView.as_view(), name='login'),
     path('', include(router.urls)),
-    path('token/', obtain_auth_token),  # Default DRF token view
-    path('register/', RegisterView.as_view(), name='register'),  # User registration
-    path('login/', LoginView.as_view(), name='login'),  # User login
+    path('api/register/', RegistrationView.as_view(), name='register'),
+    path('api/users/login/', LoginView.as_view(), name='login'),
+    path('follow/<int:user_id>/', views.followuser, name='followuser'),
+    path('unfollow/<int:user_id>/', views.unfollowuser, name='unfollowuser'),
+    path('api/users/register/', RegisterView.as_view(), name='register'),
 ]
