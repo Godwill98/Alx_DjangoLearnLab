@@ -9,6 +9,7 @@ class Recipe(models.Model):
         ('Main Course', 'Main Course'),
         ('Breakfast', 'Breakfast'),
         ('Vegetarian', 'Vegetarian'),
+        ('Drinks', 'Drinks'),
     ]
     
     title = models.CharField(max_length=255)
