@@ -1,6 +1,3 @@
-Here’s a simple yet detailed README file for your Recipe Management API project using Django REST framework and JWT authentication:
-
----
 
 # **Recipe Management API**
 
